@@ -1,4 +1,8 @@
-FROM plexinc/pms-docker:plexpass
+FROM ubuntu:16.04
+
+ARG S6_OVERLAY_VERSION=v1.17.2.0
+ARG DEBIAN_FRONTEND="noninteractive"
+ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
