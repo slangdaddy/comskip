@@ -30,4 +30,4 @@ RUN apt-get update && \
     rm -rf /tmp/* && \
     rm -rf /var/tmp/*
 
-#ADD ./PlexComskip.conf /opt/PlexComskip/PlexComskip.conf
+ADD ./comskip.ini /opt/Comskip/comskip.ini
