@@ -17,12 +17,11 @@ RUN apt-get update && \
     ./configure && \
     make && \
 
-# Clone PlexComskip
+# Clone Comchap
     cd /opt && \
-    git clone https://github.com/ekim1337/PlexComskip.git && \
-    chmod -R 777 /opt/ /tmp/ /root/ && \
-    touch /var/log/PlexComskip.log && \
-    chmod 777 /var/log/PlexComskip.log && \
+    git clone https://github.com/BrettSheleski/comchap.git && \
+    cd comchap && \
+    make && \
 
 # Cleanup
     apt-get -y autoremove && \
@@ -31,4 +30,4 @@ RUN apt-get update && \
     rm -rf /tmp/* && \
     rm -rf /var/tmp/*
 
-ADD ./PlexComskip.conf /opt/PlexComskip/PlexComskip.conf
+#ADD ./PlexComskip.conf /opt/PlexComskip/PlexComskip.conf
