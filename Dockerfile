@@ -1,5 +1,10 @@
 FROM ubuntu:16.04
 
+MAINTAINER mezz64 <jtmihalic@gmail.com>
+
+ENV USER_ID=99
+ENV GROUP_ID=100
+
 ARG S6_OVERLAY_VERSION=v1.17.2.0
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
@@ -31,3 +36,18 @@ RUN apt-get update && \
     rm -rf /var/tmp/*
 
 ADD ./comskip.ini /opt/Comskip/comskip.ini
+
+#make config folder
+RUN mkdir /config 
+
+#Add start script
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+
+#Add python script
+ADD socket.py /socket.py
+RUN chmod +x /socket.py
+
+VOLUME ["/config"]
+
+ENTRYPOINT ["/start.sh"]
