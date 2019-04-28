@@ -42,7 +42,7 @@ class CommercialWorker(Thread):
 def accept_wrapper(sel, sock):
     """Accept connections"""
     conn, addr = sock.accept()  # Should be ready to read
-    _LOGGER.info('Accepted connection from: ' + addr)
+    _LOGGER.info('Accepted connection from: ' + str(addr))
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -60,7 +60,7 @@ def service_connection(sel, key, mask, queue):
         else:
             queue.put(data.outb.decode('utf-8'))
             data.outb = ""
-            _LOGGER.info('Closing connection to: ' + data.addr)
+            _LOGGER.info('Closing connection to: ' + str(data.addr))
             sel.unregister(sock)
             sock.close()
 
