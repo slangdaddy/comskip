@@ -66,50 +66,54 @@ def service_connection(sel, key, mask, queue):
 def find_commercials(file_path):
     """Call comchap to find commercials"""
     file_path = file_path.rstrip()
-    _LOGGER.info("Finding Commercials in: " + file_path)
 
-    name = os.path.splitext(os.path.basename(file_path))[0]
-    path = os.path.dirname(file_path)
+    if os.path.isfile(file_path):
+        _LOGGER.info("Finding Commercials in: " + file_path)
 
-    mkv_out = os.path.join(WORK_ROOT, "working", name + ".mkv")
-    new_final = os.path.join(path, name + ".mkv")
+        name = os.path.splitext(os.path.basename(file_path))[0]
+        path = os.path.dirname(file_path)
 
-    # Convert to mkv first
-    cmd = ['usr/bin/ffmpeg',
-           '-nostdin',
-           '-i', file_path,
-           '-map', '0',
-           '-c', 'copy',
-           mkv_out]
-    result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
+        mkv_out = os.path.join(WORK_ROOT, "working", name + ".mkv")
+        new_final = os.path.join(path, name + ".mkv")
 
-    _LOGGER.info("MKV file created...")
+        # Convert to mkv first
+        cmd = ['usr/bin/ffmpeg',
+               '-nostdin',
+               '-i', file_path,
+               '-map', '0',
+               '-c', 'copy',
+               mkv_out]
+        result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
-    cmd = ['/opt/comchap/comchap',
-           '--comskip=/opt/Comskip/comskip',
-           '--comskip-ini=/config/comskip.ini',
-           mkv_out]
-    result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
+        _LOGGER.info("MKV file created...")
 
-    _LOGGER.info("Commercial chapters inserted...")
+        cmd = ['/opt/comchap/comchap',
+               '--comskip=/opt/Comskip/comskip',
+               '--comskip-ini=/config/comskip.ini',
+               mkv_out]
+        result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
-    shutil.copy2(mkv_out, path)
-    # Explicitly set new file permissions
-    shutil.chown(new_final, 99, 100)
+        _LOGGER.info("Commercial chapters inserted...")
 
-    _LOGGER.info("New commercial marked file copied...")
+        shutil.copy2(mkv_out, path)
+        # Explicitly set new file permissions
+        shutil.chown(new_final, 99, 100)
 
-    # Make sure new file exists, then Remove old files
-    if os.path.isfile(new_final):
-        try:
-            os.remove(mkv_out)
-            os.remove(file_path)
-        except OSError as err:
-            _LOGGER.info("File removal error: " + err)
+        _LOGGER.info("New commercial marked file copied...")
+
+        # Make sure new file exists, then Remove old files
+        if os.path.isfile(new_final):
+            try:
+                os.remove(mkv_out)
+                os.remove(file_path)
+            except OSError as err:
+                _LOGGER.info("File removal error: " + err)
+        else:
+            _LOGGER.info("New file not created, keeping original.")
+
+        _LOGGER.info("Job Complete.")
     else:
-        _LOGGER.info("New file not created, keeping original.")
-
-    _LOGGER.info("Job Complete.")
+        _LOGGER.info("%s does not exist, nothing to do...", file_path)
 
 
 def main():
