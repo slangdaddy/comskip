@@ -1,4 +1,5 @@
-FROM ubuntu:16.04
+#FROM ubuntu:16.04
+FROM jrottenberg/ffmpeg
 
 MAINTAINER mezz64 <jtmihalic@gmail.com>
 
@@ -12,7 +13,8 @@ ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y python3 git build-essential libargtable2-dev autoconf \
-    libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev && \
+    #libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev && \
+    libtool-bin libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev && \
 
 # Clone Comskip
     cd /opt && \
