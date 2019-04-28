@@ -45,8 +45,8 @@ ADD start.sh /start.sh
 RUN chmod +x /start.sh
 
 #Add python script
-ADD socket.py /socket.py
-RUN chmod +x /socket.py
+ADD socketserv.py /socketserv.py
+RUN chmod +x /socketserv.py
 
 VOLUME ["/config"]
 
