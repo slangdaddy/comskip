@@ -2,7 +2,6 @@
 folder watcher
 """
 import os
-import sys
 import time
 import subprocess
 import logging
@@ -72,8 +71,8 @@ def find_commercials(file_path):
     name = os.path.splitext(os.path.basename(file_path))[0]
     path = os.path.dirname(file_path)
 
-    mkv_out = WORK_ROOT + "working/" + name + ".mkv"
-    new_final = path + name + ".mkv"
+    mkv_out = os.path.join(WORK_ROOT, "working", name + ".mkv")
+    new_final = os.path.join(path, name + ".mkv")
 
     # Convert to mkv first
     cmd = ['usr/bin/ffmpeg',
@@ -94,15 +93,21 @@ def find_commercials(file_path):
 
     _LOGGER.info("Commercial chapters inserted...")
 
-    shutil.move(mkv_out, new_final)
+    shutil.copy2(mkv_out, path)
 
     # Explicitly set new file permissions
-    os.chown(new_final, 99, 100)
+    shutil.chown(new_final, 99, 100)
 
-    # Remove old file
-    os.remove(file_path)
+    # Make sure new file exists, then Remove old file
+    if os.path.isfile(new_final):
+        try:
+            os.remove(file_path)
+        except OSError as err:
+            _LOGGER.info("Original file removal error: " + err)
+    else:
+        _LOGGER.info("New file not created, keeping original.")
 
-    _LOGGER.info("Original file replaced. Job Complete.")
+    _LOGGER.info("Job Complete.")
 
 
 def main():
@@ -119,7 +124,7 @@ def main():
 
     queue = Queue()
 
-    for x in range(5):
+    for xwork in range(5):
         worker = CommercialWorker(queue)
         worker.daemon = True
         worker.start()
