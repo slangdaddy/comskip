@@ -42,7 +42,7 @@ class CommercialWorker(Thread):
 def accept_wrapper(sel, sock):
     """Accept connections"""
     conn, addr = sock.accept()  # Should be ready to read
-    _LOGGER.info('Accepted connection from', addr)
+    _LOGGER.info('Accepted connection from: ' + addr)
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -60,7 +60,7 @@ def service_connection(sel, key, mask, queue):
         else:
             queue.put(data.outb.decode('utf-8'))
             data.outb = ""
-            _LOGGER.info('Closing connection to', data.addr)
+            _LOGGER.info('Closing connection to: ' + data.addr)
             sel.unregister(sock)
             sock.close()
 
@@ -73,15 +73,18 @@ def find_commercials(file_path):
     path = os.path.dirname(file_path)
 
     mkv_out = WORK_ROOT + "working/" + name + ".mkv"
+    new_final = path + name + ".mkv"
 
     # Convert to mkv first
     cmd = ['usr/bin/ffmpeg',
            '-nostdin',
            '-i', file_path,
            '-map', '0',
-           '-c copy',
+           '-c', 'copy',
            mkv_out]
     result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
+
+    _LOGGER.info("MKV file created...")
 
     cmd = ['/opt/comchap/comchap',
            '--comskip=/opt/Comskip/comskip',
@@ -89,11 +92,17 @@ def find_commercials(file_path):
            mkv_out]
     result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
-    # Explicitly set new file permissions
-    os.chown(mkv_out, 99, 100)
+    _LOGGER.info("Commercial chapters inserted...")
 
-    # Overwrite existing with new file
-    shutil.move(mkv_out, file_path)
+    shutil.move(mkv_out, new_final)
+
+    # Explicitly set new file permissions
+    os.chown(new_final, 99, 100)
+
+    # Remove old file
+    os.remove(file_path)
+
+    _LOGGER.info("Original file replaced. Job Complete.")
 
 
 def main():
@@ -104,7 +113,7 @@ def main():
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lsock.bind((HOST, PORT))
     lsock.listen()
-    _LOGGER.info('listening on', (HOST, PORT))
+    _LOGGER.info('Listening on: ' + (HOST, PORT))
     lsock.setblocking(False)
     sel.register(lsock, selectors.EVENT_READ, data=None)
 
