@@ -14,13 +14,13 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y python3 git build-essential libargtable2-dev autoconf \
     #libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev
-    libtool-bin libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev
+    libtool-bin libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev \
     libc6-dev libgdiplus wget software-properties-common
 
 # Add FFMPEG
 RUN wget https://www.ffmpeg.org/releases/ffmpeg-4.1.3.tar.gz && \
     tar -xzf ffmpeg-4.1.3.tar.gz; rm -r ffmpeg-4.1.3.tar.gz && \
-    cd ./ffmpeg-4.1.3; ./configure --enable-gpl --enable-libmp3lame --enable-decoder=mjpeg,png
+    cd ./ffmpeg-4.1.3; ./configure --enable-gpl --enable-libmp3lame --enable-decoder=mjpeg,png \
     --enable-encoder=png --enable-openssl --enable-nonfree && \
     cd ./ffmpeg-4.1.3; make && \
     cd ./ffmpeg-4.1.3; make install
