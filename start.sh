@@ -11,6 +11,6 @@ usermod -d /home nobody
 chown -R nobody:users /home
 
 # Start program
-python socket.py #$EMBY_API_KEY $EMBY_USER_KEY $EMBY_URL $EMBY_UNC
+python3 socket.py #$EMBY_API_KEY $EMBY_USER_KEY $EMBY_URL $EMBY_UNC
 
 echo "Stopping Container.."
