@@ -1,8 +1,7 @@
 """
-folder watcher
+Socket server commercial remover
 """
 import os
-import time
 import subprocess
 import logging
 import shutil
@@ -66,6 +65,7 @@ def service_connection(sel, key, mask, queue):
 
 def find_commercials(file_path):
     """Call comchap to find commercials"""
+    file_path = file_path.rstrip()
     _LOGGER.info("Finding Commercials in: " + file_path)
 
     name = os.path.splitext(os.path.basename(file_path))[0]
@@ -94,16 +94,18 @@ def find_commercials(file_path):
     _LOGGER.info("Commercial chapters inserted...")
 
     shutil.copy2(mkv_out, path)
-
     # Explicitly set new file permissions
     shutil.chown(new_final, 99, 100)
 
-    # Make sure new file exists, then Remove old file
+    _LOGGER.info("New commercial marked file copied...")
+
+    # Make sure new file exists, then Remove old files
     if os.path.isfile(new_final):
         try:
+            os.remove(mkv_out)
             os.remove(file_path)
         except OSError as err:
-            _LOGGER.info("Original file removal error: " + err)
+            _LOGGER.info("File removal error: " + err)
     else:
         _LOGGER.info("New file not created, keeping original.")
 
@@ -140,13 +142,6 @@ def main():
                 accept_wrapper(sel, key.fileobj)
             else:
                 service_connection(sel, key, mask, queue)
-
-    # while True:
-    #     #Nested while loop to keep trying to connect rather than fail
-    #     while True:
-
-    #     # Check every 10 minutes
-    #     time.sleep(600)
 
 
 if __name__ == '__main__':
