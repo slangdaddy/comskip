@@ -75,41 +75,47 @@ def find_commercials(file_path):
 
         mkv_out = os.path.join(WORK_ROOT, "working", name + ".mkv")
         new_final = os.path.join(path, name + ".mkv")
+        backup = os.path.join(path, name + ".mkv.bak")
 
         # Convert to mkv first
-        cmd = ['usr/bin/ffmpeg',
-               '-nostdin',
-               '-i', file_path,
-               '-map', '0',
-               '-c', 'copy',
-               mkv_out]
-        result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
+        # cmd = ['usr/bin/ffmpeg',
+        #        '-nostdin',
+        #        '-i', file_path,
+        #        '-map', '0',
+        #        '-c', 'copy',
+        #        mkv_out]
+        # result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
-        _LOGGER.info("MKV file created...")
+        # _LOGGER.info("MKV file created...")
 
         cmd = ['/opt/comchap/comchap',
                '--comskip=/opt/Comskip/comskip',
                '--comskip-ini=/config/comskip.ini',
+               file_path,
                mkv_out]
         result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
         _LOGGER.info("Commercial chapters inserted...")
 
-        shutil.copy2(mkv_out, path)
+        #Rename original as backup
+        shutil.move(file_path, backup)
+
         # Explicitly set new file permissions
-        shutil.chown(new_final, 99, 100)
+        shutil.chown(mkv_out, 99, 100)
+
+        shutil.move(mkv_out, file_path)
 
         _LOGGER.info("New commercial marked file copied...")
 
-        # Make sure new file exists, then Remove old files
-        if os.path.isfile(new_final):
-            try:
-                os.remove(mkv_out)
-                os.remove(file_path)
-            except OSError as err:
-                _LOGGER.info("File removal error: " + err)
-        else:
-            _LOGGER.info("New file not created, keeping original.")
+        # # Make sure new file exists, then Remove old files
+        # if os.path.isfile(new_final):
+        #     try:
+        #         os.remove(mkv_out)
+        #         os.remove(file_path)
+        #     except OSError as err:
+        #         _LOGGER.info("File removal error: " + err)
+        # else:
+        #     _LOGGER.info("New file not created, keeping original.")
 
         _LOGGER.info("Job Complete.")
     else:
