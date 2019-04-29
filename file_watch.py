@@ -58,11 +58,12 @@ def find_commercials(pid_path, file_path):
 
         # Start commercial processing
         cmd = ['/opt/comchap/comchap',
+               '--keep-edl',
                '--comskip=/opt/Comskip/comskip',
                '--comskip-ini=/opt/Comskip/comskip.ini',
                file_path]
         result = subprocess.run(cmd, stdout=subprocess.DEVNULL, timeout=1800)
-
+        _LOGGER.debug("Subprocess finished (code: %s) for: %s", result.returncode, file_path)
         if result.returncode == 0:
             _LOGGER.info("Commercial chapters inserted into: " + file_path)
             # Explicitly set new file permissions
@@ -97,10 +98,10 @@ def find_commercials(pid_path, file_path):
                 # Something went wrong in commercial processing
                 _LOGGER.error("Comchap error: %s", result.stderr)
             else:
-                _LOGGER.errot("Unknown Comchap error for file: %s, Restoring backup.", file_path)
+                _LOGGER.error("Unknown Comchap error for file: %s, Restoring backup.", file_path)
             # If we end up here we need to make sure the backup is restored
             shutil.move(backup, file_path)
-            # Remove working indicator from set to try again
+            # Remove working indicator
             os.remove(pid_path)
             IN_PROCESS.remove(file_path)
     else:
