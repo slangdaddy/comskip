@@ -12,10 +12,10 @@ ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y python3 git build-essential libargtable2-dev autoconf \
-    libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev
+    libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev && \
 
 # Clone Comskip
-RUN cd /opt && \
+    cd /opt && \
     git clone git://github.com/erikkaashoek/Comskip && \
     cd Comskip && \
     ./autogen.sh && \
@@ -23,13 +23,13 @@ RUN cd /opt && \
     make && \
 
 # Clone Comchap
-RUN cd /opt && \
+    cd /opt && \
     git clone https://github.com/BrettSheleski/comchap.git && \
     cd comchap && \
     make && \
 
 # Cleanup
-RUN apt-get -y autoremove && \
+    apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && \
