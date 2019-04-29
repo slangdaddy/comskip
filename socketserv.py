@@ -88,22 +88,24 @@ def find_commercials(file_path):
 
         # _LOGGER.info("MKV file created...")
 
+        #Rename original as backup
+        shutil.copy(file_path, backup)
+
         cmd = ['/opt/comchap/comchap',
                '--comskip=/opt/Comskip/comskip',
                '--comskip-ini=/config/comskip.ini',
-               file_path,
-               mkv_out]
+               file_path]
         result = subprocess.run(cmd, stdout=subprocess.DEVNULL)
 
         _LOGGER.info("Commercial chapters inserted...")
 
         #Rename original as backup
-        shutil.move(file_path, backup)
+        #shutil.move(file_path, backup)
 
         # Explicitly set new file permissions
-        shutil.chown(mkv_out, 99, 100)
+        shutil.chown(file_path, 99, 100)
 
-        shutil.move(mkv_out, file_path)
+        #shutil.move(mkv_out, file_path)
 
         _LOGGER.info("New commercial marked file copied...")
 
