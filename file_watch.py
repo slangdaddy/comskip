@@ -107,7 +107,8 @@ def find_commercials(pid_path, file_path):
     else:
         # File doesn't exist, we can't do anything
         _LOGGER.info("%s does not exist, nothing to do...", file_path)
-        # Just remove from set to try again
+        # Remove working indicator
+        os.remove(pid_path)
         IN_PROCESS.remove(file_path)
 
 
