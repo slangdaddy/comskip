@@ -1,22 +1,16 @@
-FROM ubuntu:16.04
+#FROM ubuntu:16.04
+FROM jlesage/baseimage:ubuntu-16.04
 
-MAINTAINER mezz64 <jtmihalic@gmail.com>
-
-ENV USER_ID=99
-ENV GROUP_ID=100
-
-ARG S6_OVERLAY_VERSION=v1.17.2.0
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y python3 git build-essential libargtable2-dev autoconf \
+    apt-get install -y bc git build-essential libargtable2-dev autoconf \
     libtool-bin ffmpeg libsdl1.2-dev libavutil-dev libavformat-dev libavcodec-dev && \
 
 # Clone Comskip
     cd /opt && \
-    git clone git://github.com/erikkaashoek/Comskip && \
+    git clone https://github.com/erikkaashoek/Comskip && \
     cd Comskip && \
     ./autogen.sh && \
     ./configure && \
@@ -37,17 +31,17 @@ RUN apt-get update && \
 
 ADD ./comskip.ini /opt/Comskip/comskip.ini
 
-#make config folder
-RUN mkdir /config 
+# Add start script
+ADD comskip-wrapper.sh /comskip-wrapper.sh
+RUN chmod +x /comskip-wrapper.sh
+ADD start.sh /startapp.sh
+RUN chmod +x /startapp.sh
 
-#Add start script
-ADD start.sh /start.sh
-RUN chmod +x /start.sh
-
-#Add python script
-ADD file_watch.py /file_watch.py
-RUN chmod +x /file_watch.py
+ENV APP_NAME="comskip"
 
 VOLUME ["/config"]
+VOLUME ["/input"]
+VOLUME ["/output"]
+VOLUME ["/work"]
 
-ENTRYPOINT ["/start.sh"]
+#ENTRYPOINT ["/start.sh"]

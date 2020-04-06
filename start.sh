@@ -1,16 +1,7 @@
 #!/bin/bash
 
-#Give message when starting the container
-printf "\n \n \n ------------------------Starting container ------------------------ \n \n \n"
+if [ "$(id -u)" -eq 0 ] && [ "$USER_ID" -ne 0 ]; then
+    exec $APP_NICE_CMD s6-applyuidgid -u $USER_ID -g $GROUP_ID -G ${SUP_GROUP_IDS:-$GROUP_ID} "$0" "$@"
+fi
 
-# Configure user nobody to match unRAID's settings
-#export DEBIAN_FRONTEND="noninteractive"
-usermod -u 99 nobody
-usermod -g 100 nobody
-usermod -d /home nobody
-chown -R nobody:users /home
-
-# Start program
-python3 file_watch.py $REC_PATH #$EMBY_API_KEY $EMBY_USER_KEY $EMBY_URL $EMBY_UNC
-
-echo "Stopping Container.."
+exec /comskip-wrapper.sh
