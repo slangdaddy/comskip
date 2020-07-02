@@ -30,6 +30,34 @@ while true; do
 		item=${i}
 		item_matroska=${item_basename}.mkv
 
+		# logic for vdr recordings should be as follows
+		# recording_name :=
+		# comskip_input_file :=
+		# iterate over items in input directory
+		#   if item is a directory
+		#     if item contains folders named *.rec
+		#       recording_name := item folder name
+		#       if those *.rec folders contain *.ts files
+		#         if those files are in use
+		#           skip because files are in use
+		#         else
+		#           comskip_input_file = workdir/recording_name.mkv
+		#           ffmpeg_input_file = workdir/recording_name.ts
+		#           concatenate files into ffmpeg_input_file
+		#           convert ffmpeg_input_file to comskip_input_file using ffmpeg
+		#       else
+		#         skip because of missing ts files
+		#     else
+		#       skip because of missing rec folder
+		#   else # item is a file
+		#     recording_name := item name without suffix
+		#     comskip_input_file = workdir/recording_name.mkv
+		#     copy item file to comskip_input_file
+		#   call comskip on comskip_input_file
+		#   move comskip_input_file to output directory
+		#   sleep for next iteration
+		# end iteration
+
 		# TODO: allow more flexibility
 		if [[ -d ${item} && "${item_ext}" == "rec" ]]; then
 			echo "Found recording directory."
