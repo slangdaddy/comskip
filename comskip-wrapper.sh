@@ -6,7 +6,7 @@ OUTPUTDIR=/output
 CONFDIR=/config
 
 # Start program
-if [ -n "${DEBUG}" ]; then
+if [ "${DEBUG:-0}" -eq "1" ]; then
 	echo "Some debugging information:"
 	echo "Environment:"
 	env
@@ -15,10 +15,12 @@ if [ -n "${DEBUG}" ]; then
 	echo "Setting bash verbose mode.."
 	set -x
 fi
+
 if [ ! -f "${CONFDIR}/comskip.ini" ]; then
 	echo "Copying default comskip.ini to config dir.."
 	cp /opt/Comskip/comskip.ini ${CONFDIR}/comskip.ini
 fi
+
 while true; do
 	echo "Looping over items in '${INPUTDIR}'"
 	for i in ${INPUTDIR}/*; do
